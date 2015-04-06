@@ -1,0 +1,34 @@
+<link rel="import" href="../polymer/polymer.html">
+
+<!--
+Element providing solution to editing/saving content.
+
+##### Example
+
+    <edit-mode-content></edit-mode-content>
+
+@element edit-mode-content
+@blurb Element providing solution to editing/saving content.
+@status alpha
+@homepage http://BasicElements.github.io/edit-mode-content
+@homepage http://BasicElements.github.io/edit-mode-content/demo.html
+-->
+<polymer-element name="edit-mode-content" attributes="editMode content">
+  <template>
+    <!-- TODO: add some styling -->
+    <div id="edit" contentEditable?="{{editMode}}">{{content}}</div>
+  </template>
+  <script>
+    Polymer({
+      /**
+      * 'saveContent' saves the edited content to the 'content' attribute.
+      *
+      * @method saveContent
+      * @param {string} innerText
+      */
+      saveContent: function() {
+        this.content = this.$.edit.innerText;
+      }
+    });
+  </script>
+</polymer-element>
