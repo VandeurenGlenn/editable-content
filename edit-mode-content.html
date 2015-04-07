@@ -20,14 +20,23 @@ Element providing solution to editing/saving content.
   </template>
   <script>
     Polymer({
+      publish: {
+        events: {value: false, reflect: true}
+      },
+      eventAttribute: 'fire-event',
       /**
       * 'saveContent' saves the edited content to the 'content' attribute.
       *
       * @method saveContent
       * @param {string} innerText
       */
-      saveContent: function() {
-        this.content = this.$.edit.innerText;
+      saveContent: function(item) {
+        if(this.hasAttribute(this.eventAttribute)) {
+          var item = this.$.edit.innerText;
+          this.fire('content-saved', item);
+        }else{
+          this.content = this.$.edit.innerText;
+        }
       }
     });
   </script>
