@@ -31,12 +31,12 @@ Element providing solution to editing/saving content.
       * @param {string} innerText
       */
       saveContent: function(item) {
+        if(this.hasAttribute(this.eventAttribute)) {
           var item = this.$.edit.innerText;
           this.fire('content-saved', item);
         }else{
           this.content = this.$.edit.innerText;
         }
-
       }
     });
   </script>
