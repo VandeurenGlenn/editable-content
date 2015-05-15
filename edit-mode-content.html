@@ -15,6 +15,11 @@ Element providing solution to editing/saving content.
 -->
 <polymer-element name="edit-mode-content" attributes="editMode content">
   <template>
+    <style>
+      :host {
+        min-width: 200px;
+      }
+    </style>
     <!-- TODO: add some styling -->
     <div id="edit" contentEditable?="{{editMode}}">{{content}}</div>
   </template>
