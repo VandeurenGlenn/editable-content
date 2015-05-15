@@ -8,9 +8,6 @@
   ],
   "main": "edit-mode-content.html",
   "dependencies": {
-    "polymer": "Polymer/polymer#^0.5.5"
-  },
-  "devDependencies": {
-    "web-component-tester": "Polymer/web-component-tester#^2.2.3"
+    "polymer": "Polymer/polymer#^0.5.6"
   }
 }
