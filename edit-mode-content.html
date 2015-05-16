@@ -23,14 +23,17 @@ Element providing solution to editing/saving content.
         min-height: 20px;
       }
     </style>
-    <!-- TODO: add some styling -->
     <div id="edit" contentEditable?="{{editMode}}">{{content}}</div>
   </template>
   <script>
     Polymer({
-      publish: {
-        events: {value: false, reflect: true}
-      },
+      /**
+      * Attribute to set on element for firing the 'content-saved' event.
+      *
+      * @attribute fire-event
+      * @type string
+      * @default fire-event
+      */
       eventAttribute: 'fire-event',
 
       /**
