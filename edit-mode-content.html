@@ -47,7 +47,7 @@ Element providing solution to editing/saving content.
           var item = this.$.edit.innerText;
           this.fire('content-saved', item);
         }else{
-          this.content = this.$.edit.innerText;
+          this.content = this.$.edit.innerHTML;
         }
       }
     });
