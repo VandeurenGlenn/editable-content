@@ -16,9 +16,11 @@ Element providing solution to editing/saving content.
 <polymer-element name="edit-mode-content" attributes="editMode content">
   <template>
     <style>
-      :host {
+      :host, #edit {
         min-width: 200px;
         height: 100%;
+        width: 100%;
+        min-height: 20px;
       }
     </style>
     <!-- TODO: add some styling -->
@@ -30,6 +32,7 @@ Element providing solution to editing/saving content.
         events: {value: false, reflect: true}
       },
       eventAttribute: 'fire-event',
+
       /**
       * 'saveContent' saves the edited content to the 'content' attribute.
       *
