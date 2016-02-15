@@ -1,0 +1,82 @@
+
+<!doctype html>
+<!--
+@license
+Copyright (c) 2016 Glenn Vandeuren. All rights reserved.
+-->
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+    <title>edit-mode-content Demo</title>
+    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+    <link rel="import" href="../edit-mode-content.html">
+  </head>
+  <style>
+    .e1, .e2-change, .e1-complete {
+      color: green;
+    }
+    .e2, .e2-change {
+      color: blue;
+    }
+    .e3, .e3-change {
+      color: red;
+    }
+    .e1-change, .e2-change, .e3-change {
+      opacity: 0.5;
+    }
+    .e1-complete {
+      font-weight: 800;
+    }
+  </style>
+  <body unresolved>
+
+    <p>An example of <code>&lt;edit-mode-content&gt;</code>:</p>
+
+    <edit-mode-content class="e1" content="text" after-input="false" after-focus-lost="true"></edit-mode-content>
+
+    <edit-mode-content class="e2" content="some text in text" name="text"></edit-mode-content>
+
+    <edit-mode-content class="e3" content="edit enabled" placeholder="edit disabled" name="e3"></edit-mode-content>
+
+    <button type="button" name="e3" onclick="toggleMode(event)">edit</button>
+
+    <div class="result"></div>
+
+
+  </body>
+  <script>
+    var editElements = document.querySelectorAll('edit-mode-content');
+    var e1 = document.querySelector('.e1');
+
+    updateResult = function(_class, text) {
+      var p = document.createElement('p');
+      p.classList.add(_class);
+      p.innerText = text;
+      document.querySelector('.result').appendChild(p);
+    };
+
+    for (var i = 0; i < editElements.length; i++) {
+      editElements[i].addEventListener('content-edit-change', function(e) {
+        updateResult(e.target.classList[0] + '-change', 'event: content-edit-change: ' + e.detail);
+      });
+    };
+    
+    onInputComplete = function(e) {
+      updateResult('e1-complete', 'event: content-edit-complete, value: ' + e.detail);
+    };
+
+    e1.addEventListener('content-edit-complete', onInputComplete.bind(this));
+
+    toggleMode = function() {
+      el = document.querySelector('edit-mode-content[name="e3"]');
+      if (!el.editMode) {
+        el.editMode = true;
+      } else {
+        el.editMode = false;
+      }
+    };
+
+    // })
+  </script>
+</html>

@@ -1,3 +1,3 @@
-# edit-mode-content
+# editable-content
 
-See the [component page](http://BasicElements.github.io/edit-mode-content/index.html) for more information.
+See the [component page](http://vandeurenglenn.github.io/components/editable-content/index.html) for more information.

@@ -1,0 +1,160 @@
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../iron-input/iron-input.html">
+
+<!--
+Element providing solution to editing/saving content.
+
+##### Example
+
+    <editable-content></editable-content>
+
+@group Ui Elements
+@element editable-content
+@demo demo/index.html
+-->
+<dom-module id="editable-content">
+  <style>
+      :host {
+        display: inline-flex;
+        flex-direction: row;
+        min-width: 160px;
+        height: 100%;
+        width: 100%;
+        min-height: 20px;
+        padding: 8px;
+      }
+      input, span {
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        /*-webkit-appearance: none;*/
+        border: none;
+        outline: none;
+        color: inherit;
+        background: none;
+        font-weight: 500;
+        font-size: 14px;
+        font-family: sans-serif;
+      }
+    </style>
+  <template>
+    <template is="dom-if" if="[[!_computeMode(editMode, placeholder)]]" restamp="true" on-dom-change="_onDomChange">
+      <span class="placeholder">[[placeholder]]</span>
+    </template>
+  </template>
+  <script>
+    Polymer({
+      is: 'editable-content',
+
+      hostAttributes: {
+        'after-input': 'true',
+        tabindex: 0
+      },
+
+      properties: {
+        content: { type: String, notify: true },
+
+        /**
+         * When defining an 'placeholder', set editMode to true for making edits.
+         */
+        placeholder: {
+          type: String,
+          value: null
+        },
+        name: String,
+        editMode: { type: Boolean, value: false, notify: true },
+        type: {
+          type: String,
+          value: 'text'
+        },
+        afterInput: {
+          type: Boolean,
+          value: true
+        },
+        /**
+         * When true, fires the 'content-change' event after focus is lost.
+         */
+        afterFocusLost: {
+          type: Boolean,
+          value: false
+        }
+      },
+
+      get _afterInput() {
+        if (this.getAttribute('after-input') === 'true') {
+          return true;
+        }
+        return false;
+      },
+
+      _computeMode: function(editMode, placeholder) {
+        if (!editMode && !placeholder) {
+          return true;
+        } else if (editMode) {
+          return true;
+        }
+        return false;
+      },
+      /**
+       * Fires the 'content-edit-complete event whenever focus is lost (enter, tab, etc)'
+       *
+       * @event content-edit-complete
+       * @detail {String}
+       */
+       // TODO: if input coming from object update the update value in dataHost easy todo using namespace
+      _fireComplete: function() {
+        // if (Boolean(this.afterFocusLost)) {
+          this.fire('content-edit-complete', event.target.value);
+        // }
+      },
+
+      /**
+       * Fires the 'content-edit-change event whenever content changes'
+       *
+       * @event content-edit-change
+       * @detail {String}
+       */
+       // TODO: if content coming from object update the update value in dataHost easy todo using namespace
+      _fireChange: function() {
+        if (this._afterInput) {
+          this.fire('content-edit-change', event.target.value);
+        }
+      },
+
+      _setupListeners: function(focus, input) {
+        if (this._inputEl && focus) {
+          this._inputEl.addEventListener('change', this._fireComplete.bind(this));
+        }
+        if (this._inputEl && input) {
+          this._inputEl.addEventListener('input', this._fireChange.bind(this));
+        }
+      },
+
+      _removeListeners: function(focus, input) {
+        if (this._inputEl) {
+          this._inputEl.removeEventListener('change', this._fireComplete.bind(this));
+          this._inputEl.removeEventListener('input', this._fireChange.bind(this));
+        }
+      },
+
+      /**
+       * This is where we setup/remove listeners.
+       */
+      _onDomChange: function() {
+        if (!event.target.if) {
+          this._inputEl = document.createElement('input');
+          this._inputEl.is = 'iron-input';
+          this._inputEl.type = this.type;
+          this._inputEl.value = this.content;
+          Polymer.dom(this.root).appendChild(this._inputEl);
+          this._setupListeners(this.afterFocusLost, this._afterInput);
+        } else {
+          if (this._inputEl) {
+            this._removeListeners();
+            Polymer.dom(this.root).removeChild(this._inputEl);
+          }
+        };
+      }
+    });
+  </script>
+</dom-module>
