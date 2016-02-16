@@ -55,7 +55,7 @@ Element providing solution to editing/saving content.
       },
 
       properties: {
-        content: { type: String, value: null, observer: '__contentChange__' },
+        content: { type: String, observer: '__contentChange__' },
 
         /**
          * When defining an 'placeholder', set editMode to true for making edits.
@@ -170,10 +170,14 @@ Element providing solution to editing/saving content.
       /**
        * Updates the input value when content changes
        */
-      __contentChange__: function(change) {
-        if (this._inputEl && this._inputEl.value !== change) {
-          this._inputEl.value = change;
+      __contentChange__: function(_new, old) {
+        if (_new !== old) {
+          this._inputEl.value = _new;
+          if (old !== undefined) {
+            this.set('_lastContent', old);
+          }
         }
+
       },
 
       /**
@@ -189,14 +193,12 @@ Element providing solution to editing/saving content.
         * @event content-no-change
         * @detail {String}
         */
-      _saveOnClose: function(content, editMode, saveOnClose) {
-        if (content !== this._lastContent && this.lastContent && !editMode && saveOnClose) {
+      _saveOnClose: function(content, editMode, saveOnClose) {console.log(content);
+        if (content !== this._lastContent && this._lastContent && !editMode && saveOnClose) {
           this.fire('content-save', content);
-        } else if (!editMode && saveOnClose) {
+        } else if (this._lastContent && !editMode && saveOnClose) {
           this.fire('content-no-change', content);
         }
-        // Update '_lastContent'
-        this.set('_lastContent', content);
       }
     });
   </script>
