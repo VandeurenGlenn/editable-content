@@ -18,10 +18,10 @@ Element providing solution to editing/saving content.
         display: inline-flex;
         flex-direction: row;
         min-width: 160px;
-        height: 100%;
-        width: 100%;
         min-height: 20px;
         padding: 8px;
+        cursor: default;
+        pointer-events: none;
       }
       input, span {
         padding: 0;
@@ -36,9 +36,12 @@ Element providing solution to editing/saving content.
         font-size: 14px;
         font-family: sans-serif;
       }
+      :host[edit-mode] input {
+        pointer-events: visible;
+      }
     </style>
   <template>
-    <template is="dom-if" if="[[!_computeMode(editMode, placeholder)]]" restamp="true" on-dom-change="_onDomChange">
+    <template is="dom-if" if="[[_computeMode(editMode, placeholder)]]" restamp="true" on-dom-change="_onDomChange">
       <span class="placeholder">[[placeholder]]</span>
     </template>
   </template>
@@ -52,17 +55,16 @@ Element providing solution to editing/saving content.
       },
 
       properties: {
-        content: { type: String, notify: true },
+        content: { type: String, value: null, observer: '__contentChange__' },
 
         /**
          * When defining an 'placeholder', set editMode to true for making edits.
          */
         placeholder: {
-          type: String,
-          value: null
+          type: String
         },
         name: String,
-        editMode: { type: Boolean, value: false, notify: true },
+        editMode: { type: Boolean, value: false },
         type: {
           type: String,
           value: 'text'
@@ -77,8 +79,20 @@ Element providing solution to editing/saving content.
         afterFocusLost: {
           type: Boolean,
           value: false
+        },
+
+        /**
+         * When true the 'content-saved' event will be fired whenever editMode changes to false.
+         */
+        saveOnClose: {
+          type: Boolean,
+          value: false
         }
       },
+
+      observers: [
+        '_saveOnClose(content, editMode, saveOnClose)'
+      ],
 
       get _afterInput() {
         if (this.getAttribute('after-input') === 'true') {
@@ -88,25 +102,18 @@ Element providing solution to editing/saving content.
       },
 
       _computeMode: function(editMode, placeholder) {
-        if (!editMode && !placeholder) {
-          return true;
-        } else if (editMode) {
+        if (!editMode && placeholder) {
           return true;
         }
         return false;
       },
+
       /**
        * Fires the 'content-edit-complete event whenever focus is lost (enter, tab, etc)'
        *
        * @event content-edit-complete
        * @detail {String}
        */
-       // TODO: if input coming from object update the update value in dataHost easy todo using namespace
-      _fireComplete: function() {
-        // if (Boolean(this.afterFocusLost)) {
-          this.fire('content-edit-complete', event.target.value);
-        // }
-      },
 
       /**
        * Fires the 'content-edit-change event whenever content changes'
@@ -115,19 +122,23 @@ Element providing solution to editing/saving content.
        * @detail {String}
        */
        // TODO: if content coming from object update the update value in dataHost easy todo using namespace
-      _fireChange: function() {
+      _handleChange: function(event) {
+        this.set('content', event.target.value);
         if (this._afterInput) {
-          this.fire('content-edit-change', event.target.value);
+          this.fire('content-edit-change', this.content);
+        } else if (this.afterFocusLost) {
+          this.fire('content-edit-complete', this.content);
         }
       },
 
       _setupListeners: function(focus, input) {
-        if (this._inputEl && focus) {
-          this._inputEl.addEventListener('change', this._fireComplete.bind(this));
+        var type;
+        if (focus) {
+          type = 'change';
+        } else if (input) {
+          type = 'input';
         }
-        if (this._inputEl && input) {
-          this._inputEl.addEventListener('input', this._fireChange.bind(this));
-        }
+        this._inputEl.addEventListener(type, this._handleChange.bind(this));
       },
 
       _removeListeners: function(focus, input) {
@@ -154,6 +165,38 @@ Element providing solution to editing/saving content.
             Polymer.dom(this.root).removeChild(this._inputEl);
           }
         };
+      },
+
+      /**
+       * Updates the input value when content changes
+       */
+      __contentChange__: function(change) {
+        if (this._inputEl && this._inputEl.value !== change) {
+          this._inputEl.value = change;
+        }
+      },
+
+      /**
+       * Fires the 'content-save' event when editMode changes to false & content was changed.
+       *
+       * @event content-save
+       * @detail {String}
+       */
+
+       /**
+        * Fires the 'content-no-change' event when editMode changes to false & content was not changed.
+        *
+        * @event content-no-change
+        * @detail {String}
+        */
+      _saveOnClose: function(content, editMode, saveOnClose) {
+        if (content !== this._lastContent && this.lastContent && !editMode && saveOnClose) {
+          this.fire('content-save', content);
+        } else if (!editMode && saveOnClose) {
+          this.fire('content-no-change', content);
+        }
+        // Update '_lastContent'
+        this.set('_lastContent', content);
       }
     });
   </script>
