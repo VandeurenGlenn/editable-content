@@ -91,8 +91,13 @@ Element providing solution to editing/saving content.
       },
 
       observers: [
-        '_saveOnClose(content, editMode, saveOnClose)'
+        '_saveOnClose(content, editMode, saveOnClose)',
+        '__editModeChanged__(editMode)'
       ],
+
+      detached: function() {
+        this._removeListeners(this.afterFocusLost, this._afterInput);
+      },
 
       get _afterInput() {
         if (this.getAttribute('after-input') === 'true') {
@@ -142,9 +147,14 @@ Element providing solution to editing/saving content.
       },
 
       _removeListeners: function(focus, input) {
+        var type;
+        if (focus) {
+          type = 'change';
+        } else if (input) {
+          type = 'input';
+        }
         if (this._inputEl) {
-          this._inputEl.removeEventListener('change', this._fireComplete.bind(this));
-          this._inputEl.removeEventListener('input', this._fireChange.bind(this));
+          this._inputEl.removeEventListener(type, this._handleChange.bind(this));
         }
       },
 
@@ -161,7 +171,7 @@ Element providing solution to editing/saving content.
           this._setupListeners(this.afterFocusLost, this._afterInput);
         } else {
           if (this._inputEl) {
-            this._removeListeners();
+            this._removeListeners(this.afterFocusLost, this._afterInput);
             Polymer.dom(this.root).removeChild(this._inputEl);
           }
         };
@@ -177,7 +187,12 @@ Element providing solution to editing/saving content.
             this.set('_lastContent', old);
           }
         }
+      },
 
+      __editModeChanged__: function(mode) {
+        if (mode) {
+          this.set('_startContent', this.content);
+        }
       },
 
       /**
@@ -193,8 +208,8 @@ Element providing solution to editing/saving content.
         * @event content-no-change
         * @detail {String}
         */
-      _saveOnClose: function(content, editMode, saveOnClose) {console.log(content);
-        if (content !== this._lastContent && this._lastContent && !editMode && saveOnClose) {
+      _saveOnClose: function(content, editMode, saveOnClose) {
+        if (content !== this._lastContent && content !== this._startContent && this._lastContent && !editMode && saveOnClose) {
           this.fire('content-save', content);
         } else if (this._lastContent && !editMode && saveOnClose) {
           this.fire('content-no-change', content);
