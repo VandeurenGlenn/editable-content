@@ -16,7 +16,7 @@ Element providing solution to editing/saving content.
   <style>
       :host {
         display: inline-flex;
-        flex-direction: row;
+        flex-direction: column;
         min-width: 160px;
         min-height: 20px;
         padding: 8px;
@@ -39,11 +39,30 @@ Element providing solution to editing/saving content.
       :host[edit-mode] input {
         pointer-events: visible;
       }
+      .editing-line {
+        opacity: 0;
+        width: 0;
+        will-change: opacity, width;
+        /*transform: scaleX(50);*/
+      }
+      :host[edit-mode] .editing-line {
+        background-color: rgb(33,150,243);
+        opacity: 0.88;
+        height: 1px;
+        left: 0;
+        margin: -1px 0 0 0;
+        padding: 0;
+        transition: opacity 0.25s ease-in-out, width 0.25s ease-in-out;
+        width: 100%;
+      }
     </style>
   <template>
     <template is="dom-if" if="[[_computeMode(editMode, placeholder)]]" restamp="true" on-dom-change="_onDomChange">
       <span class="placeholder">[[placeholder]]</span>
     </template>
+    <span class="editing-line">
+
+    </span>
   </template>
   <script>
     Polymer({
@@ -167,7 +186,7 @@ Element providing solution to editing/saving content.
           this._inputEl.is = 'iron-input';
           this._inputEl.type = this.type;
           this._inputEl.value = this.content;
-          Polymer.dom(this.root).appendChild(this._inputEl);
+          Polymer.dom(this.root).insertBefore(this._inputEl, this.$$('span'));
           this._setupListeners(this.afterFocusLost, this._afterInput);
         } else {
           if (this._inputEl) {
