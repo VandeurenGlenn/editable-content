@@ -32,9 +32,9 @@ Element providing solution to editing/saving content.
         outline: none;
         color: inherit;
         background: none;
-        font-weight: 500;
-        font-size: 14px;
-        font-family: sans-serif;
+        font-weight: inherit;
+        font-size: inherit;
+        font-family: inherit;
       }
       :host[edit-mode] input {
         pointer-events: visible;
@@ -57,8 +57,11 @@ Element providing solution to editing/saving content.
       }
     </style>
   <template>
-    <template is="dom-if" if="[[_computeMode(editMode, placeholder)]]" restamp="true" on-dom-change="_onDomChange">
+    <template is="dom-if" if="[[_computeMode(editMode, placeholder)]]" restamp="true">
       <span class="placeholder">[[placeholder]]</span>
+    </template>
+    <template is="dom-if" if="[[_computeInputMode(placeholder)]]" restamp="true"  on-dom-change="_onDomChange">
+      <input type="[[type]]" is ="iron-input" value="[[content]]"></input>
     </template>
     <span class="editing-line">
 
@@ -80,7 +83,8 @@ Element providing solution to editing/saving content.
          * When defining an 'placeholder', set editMode to true for making edits.
          */
         placeholder: {
-          type: String
+          type: String,
+          value: null
         },
         name: String,
         editMode: { type: Boolean, value: false },
@@ -118,6 +122,10 @@ Element providing solution to editing/saving content.
         this._removeListeners(this.afterFocusLost, this._afterInput);
       },
 
+      get _inputEl() {
+        return this.$$('input');
+      },
+
       get _afterInput() {
         if (this.getAttribute('after-input') === 'true') {
           return true;
@@ -130,6 +138,12 @@ Element providing solution to editing/saving content.
           return true;
         }
         return false;
+      },
+
+      _computeInputMode: function(placeholder) {
+        if (!placeholder) {
+          return true;
+        }
       },
 
       /**
@@ -181,17 +195,11 @@ Element providing solution to editing/saving content.
        * This is where we setup/remove listeners.
        */
       _onDomChange: function() {
-        if (!event.target.if) {
-          this._inputEl = document.createElement('input');
-          this._inputEl.is = 'iron-input';
-          this._inputEl.type = this.type;
-          this._inputEl.value = this.content;
-          Polymer.dom(this.root).insertBefore(this._inputEl, this.$$('span'));
+        if (event.target.if) {
           this._setupListeners(this.afterFocusLost, this._afterInput);
         } else {
           if (this._inputEl) {
             this._removeListeners(this.afterFocusLost, this._afterInput);
-            Polymer.dom(this.root).removeChild(this._inputEl);
           }
         };
       },
@@ -200,8 +208,7 @@ Element providing solution to editing/saving content.
        * Updates the input value when content changes
        */
       __contentChange__: function(_new, old) {
-        if (_new !== old) {
-          this._inputEl.value = _new;
+        if (_new && _new !== old) {
           if (old !== undefined) {
             this.set('_lastContent', old);
           }
