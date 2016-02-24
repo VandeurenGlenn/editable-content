@@ -60,7 +60,7 @@ Element providing solution to editing/saving content.
     <template is="dom-if" if="[[_computeMode(editMode, placeholder)]]" restamp="true">
       <span class="placeholder">[[placeholder]]</span>
     </template>
-    <template is="dom-if" if="[[_computeInputMode(placeholder)]]" restamp="true"  on-dom-change="_onDomChange">
+    <template is="dom-if" if="[[_computeInputMode(editMode, placeholder)]]" restamp="true"  on-dom-change="_onDomChange">
       <input type="[[type]]" is ="iron-input" value="[[content]]"></input>
     </template>
     <span class="editing-line">
@@ -140,10 +140,11 @@ Element providing solution to editing/saving content.
         return false;
       },
 
-      _computeInputMode: function(placeholder) {
-        if (!placeholder) {
+      _computeInputMode: function(editMode, placeholder) {
+        if (!placeholder || editMode) {
           return true;
         }
+        return false;
       },
 
       /**
