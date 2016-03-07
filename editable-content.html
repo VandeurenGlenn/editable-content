@@ -4,9 +4,16 @@
 <!--
 Element providing solution to editing/saving content.
 
-##### Example
+#### Example
 
-    <editable-content></editable-content>
+    <editable-content name="name" content="[[name]]" edit-mode></editable-content>
+
+#### Using the 'event-target' property.
+> lets say you have a 'dom-bind' template with the 'id' 'app',
+
+    <template is="dom-bind" id="app">
+      <editable-content event-target="app"></editable-content>
+    </template>
 
 @group Ui Elements
 @element editable-content
