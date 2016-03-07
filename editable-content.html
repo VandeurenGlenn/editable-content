@@ -110,6 +110,16 @@ Element providing solution to editing/saving content.
         saveOnClose: {
           type: Boolean,
           value: false
+        },
+
+        /**
+         * The target where the events will be fired.
+         */
+        eventTarget: {
+          type: HTMLElement,
+          value: function() {
+            return this;
+          }
         }
       },
 
@@ -164,9 +174,9 @@ Element providing solution to editing/saving content.
       _handleChange: function(event) {
         this.set('content', event.target.value);
         if (this._afterInput) {
-          this.fire('content-edit-change', this.content);
+          this.eventTarget.fire('content-edit-change', this.content);
         } else if (this.afterFocusLost) {
-          this.fire('content-edit-complete', this.content);
+          this.eventTarget.fire('content-edit-complete', this.content);
         }
       },
 
@@ -237,9 +247,9 @@ Element providing solution to editing/saving content.
         */
       _saveOnClose: function(content, editMode, saveOnClose) {
         if (content !== this._lastContent && content !== this._startContent && this._lastContent && !editMode && saveOnClose) {
-          this.fire('content-save', content);
+          this.eventTarget.fire('content-save', content);
         } else if (this._lastContent && !editMode && saveOnClose) {
-          this.fire('content-no-change', content);
+          this.eventTarget.fire('content-no-change', content);
         }
       }
     });
