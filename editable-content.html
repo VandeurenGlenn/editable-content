@@ -89,45 +89,39 @@ Element providing solution to editing/saving content.
         /**
          * When defining an 'placeholder', set editMode to true for making edits.
          */
-        placeholder: {
-          type: String,
-          value: null
-        },
+        placeholder: { type: String, value: null },
+
         name: String,
-        editMode: { type: Boolean, value: false, reflectToAttribute: true },
-        type: {
-          type: String,
-          value: 'text'
-        },
-        afterInput: {
-          type: Boolean,
-          value: true
-        },
+
         /**
-         * When true, fires the 'content-change' event after focus is lost.
+         * When true edit is enabled
          */
-        afterFocusLost: {
-          type: Boolean,
-          value: false
-        },
+        editMode: { type: Boolean, value: false, reflectToAttribute: true },
+
+        /**
+         * The type of input
+         */
+        type: { type: String, value: 'text' },
+
+        /**
+         * When true an the 'content-edit-change' event fires after changes to content
+         */
+        afterInput: { type: Boolean, value: true },
+
+        /**
+         * When true, fires the 'content-save' event after focus is lost.
+         */
+        afterFocusLost: { type: Boolean, value: false },
 
         /**
          * When true the 'content-saved' event will be fired whenever editMode changes to false.
          */
-        saveOnClose: {
-          type: Boolean,
-          value: false
-        },
+        saveOnClose: { type: Boolean, value: false },
 
         /**
          * The target where the events will be fired.
          */
-        eventTarget: {
-          type: HTMLElement,
-          value: function() {
-            return this;
-          }
-        }
+        eventTarget: { type: HTMLElement, value: function() { return this; } }
       },
 
       observers: [
@@ -168,14 +162,14 @@ Element providing solution to editing/saving content.
        * Fires the 'content-edit-complete event whenever focus is lost (enter, tab, etc)'
        *
        * @event content-edit-complete
-       * @detail {String}
+       * @param {String} detail: value of 'content'
        */
 
       /**
        * Fires the 'content-edit-change event whenever content changes'
        *
        * @event content-edit-change
-       * @detail {String}
+       * @param {String} detail: value of 'content'
        */
        // TODO: if content coming from object update the update value in dataHost easy todo using namespace
       _handleChange: function(event) {
@@ -250,14 +244,14 @@ Element providing solution to editing/saving content.
        * Fires the 'content-save' event when editMode changes to false & content was changed.
        *
        * @event content-save
-       * @detail {String}
+       * @param {String} detail: value of 'content'
        */
 
        /**
         * Fires the 'content-no-change' event when editMode changes to false & content was not changed.
         *
         * @event content-no-change
-        * @detail {String}
+        * @param {String} detail: value of 'content'
         */
       _saveOnClose: function(content, editMode, saveOnClose) {
         if (content !== this._lastContent && content !== this._startContent && this._lastContent && !editMode && saveOnClose) {
