@@ -233,10 +233,17 @@ Element providing solution to editing/saving content.
         }
       },
 
+      /**
+       * Fires the 'edit-mode-change' event when editMode changes.
+       *
+       * @event edit-mode-change
+       * @param {Boolean} detail: the current value of 'editMode'
+       */
       __editModeChanged__: function(mode) {
         if (mode) {
           this.set('_startContent', this.content);
         }
+        this.fire('edit-mode-change', mode);
       },
 
       /**
