@@ -8,9 +8,11 @@ Copyright (c) 2016 Glenn Vandeuren. All rights reserved.
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
-    <title>edit-mode-content Demo</title>
+    <title>editable-content Demo</title>
     <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
-    <link rel="import" href="../edit-mode-content.html">
+    <link rel="import" href="../../iron-demo-helpers/demo-snippet.html">
+    <link rel="import" href="../editable-content.html">
+    <link rel="import" href="demo-elements/editable-content-log.html">
   </head>
   <style>
     .e1, .e2-change, .e1-complete {
@@ -31,23 +33,56 @@ Copyright (c) 2016 Glenn Vandeuren. All rights reserved.
   </style>
   <body unresolved>
 
-    <p>An example of <code>&lt;edit-mode-content&gt;</code>:</p>
+    <p>An example of <code>&lt;editable-content&gt;</code>:</p>
 
-    <edit-mode-content class="e1" content="text" after-input="false" after-focus-lost="true"></edit-mode-content>
+    <demo-snippet>
+      <template>
+        <editable-content class="e1" content="text" after-input="false" after-focus-lost="true" edit-mode></editable-content>
 
-    <edit-mode-content class="e2" content="some text in text" name="text"></edit-mode-content>
+        <script>
+          onInputComplete = function(e) {
+            updateResult('e1-complete', 'event: content-edit-complete, value: ' + e.detail);
+          };
 
-    <edit-mode-content class="e3" content="edit enabled" placeholder="edit disabled" name="e3"></edit-mode-content>
+          this.addEventListener('content-edit-complete', onInputComplete.bind(this));
+        </script>
+      </template>
+    </demo-snippet>
 
-    <button type="button" name="e3" onclick="toggleMode(event)">edit</button>
+    <demo-snippet>
+      <template>
+        <editable-content class="e2" content="some text in text" name="text" edit-mode></editable-content>
+        <editable-content-log></editable-content-log>
+      </template>
+
+    </demo-snippet>
+
+    <demo-snippet>
+      <template>
+        <editable-content class="e3" content="edit enabled" placeholder="edit disabled" name="e3"></editable-content>
+        <button type="button" name="e3" onclick="toggleMode(event)">edit</button>
+
+        <script>
+          toggleMode = function() {
+            el = document.querySelector('editable-content[name="e3"]');
+            if (!el.editMode) {
+              el.editMode = true;
+            } else {
+              el.editMode = false;
+            }
+          };
+        </script>
+      </template>
+    </demo-snippet>
+
+
 
     <div class="result"></div>
 
 
   </body>
   <script>
-    var editElements = document.querySelectorAll('edit-mode-content');
-    var e1 = document.querySelector('.e1');
+    var editElements = document.querySelectorAll('editable-content');
 
     updateResult = function(_class, text) {
       var p = document.createElement('p');
@@ -61,21 +96,8 @@ Copyright (c) 2016 Glenn Vandeuren. All rights reserved.
         updateResult(e.target.classList[0] + '-change', 'event: content-edit-change: ' + e.detail);
       });
     };
-    
-    onInputComplete = function(e) {
-      updateResult('e1-complete', 'event: content-edit-complete, value: ' + e.detail);
-    };
 
-    e1.addEventListener('content-edit-complete', onInputComplete.bind(this));
 
-    toggleMode = function() {
-      el = document.querySelector('edit-mode-content[name="e3"]');
-      if (!el.editMode) {
-        el.editMode = true;
-      } else {
-        el.editMode = false;
-      }
-    };
 
     // })
   </script>

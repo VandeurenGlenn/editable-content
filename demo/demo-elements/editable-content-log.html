@@ -1,0 +1,42 @@
+<dom-module id="editable-content-log">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+
+  </template>
+  <script>
+    Polymer({
+      is: 'editable-content-log',
+
+      // properties: {
+
+        // /**
+        //  * An array containing all changes, you can set yourself
+        //  */
+        // log: {
+        //   type: Array
+        // }
+      // },
+
+      // updateLog, adds the target its class to the item for easy styling
+      // example: <editable-content class="e1"></editable-content>
+      // will result in
+      // <p class="e1"></p>
+      updateLog: function(_class, text) {
+        var p = document.createElement('p');
+        p.classList.add(_class);
+        p.innerText = text;
+        Polymer.dom(this.root).appendChild(p);
+      },
+
+      attached: function() {
+        this.parentNode.addEventListener('content-edit-change', function(e) {
+          this.updateLog(e.target.classList[0] + '-change', 'event: content-edit-change: ' + e.detail);
+        }.bind(this));
+      }
+    });
+  </script>
+</dom-module>
